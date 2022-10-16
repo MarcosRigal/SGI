@@ -1,0 +1,75 @@
+import argparse
+
+def checkCommandLineArguments():
+    parser = argparse.ArgumentParser(description='Encripts with caesar algorithm a given file')
+    
+    parser.add_argument("input", type=str, metavar='INFILE', help="The file to uncypher",)
+    args = parser.parse_args()
+    
+    if len(vars(args)) < 1:
+        print("Error, missing arguments.")
+        print("Call the program by this way: python3 fuerzabrutacaesar entrada.enc")
+        exit()
+    if (args.input == None):
+        print("Error, bad arguments.")
+        print("Call the program by this way: python3 fuerzabrutacaesar entrada.enc")
+        exit()
+    return args.input
+
+def openFile(path):
+    try:
+        f = open(path, "r")
+        return f
+            
+    except:
+        print('Error, file could not be opened check if file exists.')
+
+def readFile(file):
+    try:
+        text = file.read() 
+        return text
+            
+    except:
+        print('Error, file could not be readed check if file exists.')
+
+def decipherText(text):
+
+    LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    cipheredText = []
+
+    cipheredText.append("POSSIBLE COMBINATIONS\n")
+    cipheredText.append("---------------------------------------\n")
+
+    for key in range(len(LETTERS)):
+        translated = ''
+        for symbol in text:
+            if symbol in LETTERS:
+                num = LETTERS.find(symbol)
+                num = num - key
+                if num < 0:
+                    num = num + len(LETTERS)
+                translated = translated + LETTERS[num]
+            else:
+                translated = translated + symbol
+        cipheredText.append("Hacking key #" + str(key) + ": " + translated + "\n")
+
+    return cipheredText
+
+def saveText(cipheredText, path):
+    try:
+        f = open(path, "w")
+        for line in cipheredText:
+            f.write(line)
+    except:
+        print('Error, file could not be saved check path.')
+
+if __name__ == "__main__":
+    
+    input = checkCommandLineArguments()
+    
+    file = openFile(input)
+    cipheredText = readFile(file)
+
+    combinations = decipherText(cipheredText)
+    
+    saveText(combinations, "combinations.txt")
