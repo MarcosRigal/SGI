@@ -1,0 +1,37 @@
+import sys
+import string
+
+def monoalphabetic_decrypt(input_file, output_file):
+    # Abrir ficheros de entrada y salida
+    with open(input_file, 'r') as fin, open(output_file, 'w') as fout:
+        # Leer clave de encriptación
+        key = fin.readline().strip()
+
+        # Recorrer el fichero de entrada línea a línea
+        for line in fin:
+            # Aplicar desencriptación mono-alfabética
+            decrypted_line = ''
+            for c in line:
+                if c in string.ascii_lowercase:
+                    index = key.index(c)
+                    decrypted_line += string.ascii_lowercase[index]
+                elif c in string.ascii_uppercase:
+                    index = key.index(c.lower())
+                    decrypted_line += string.ascii_uppercase[index]
+                else:
+                    decrypted_line += c
+
+            # Escribir línea desencriptada en el fichero de salida
+            fout.write(decrypted_line)
+
+# Verificar que se han proporcionado los argumentos necesarios
+if len(sys.argv) != 4:
+    print('Uso: monodec entrada.enc -o salida.txt')
+    sys.exit(1)
+
+# Obtener nombres de archivos de entrada y salida
+input_file = sys.argv[1]
+output_file = sys.argv[3]
+
+# Ejecutar la función de cifrado de Caesar
+monoalphabetic_decrypt(input_file, output_file)

@@ -1,0 +1,52 @@
+import sys
+import random
+import string
+
+def random_alphabet():
+    # Crear lista con todas las letras del alfabeto
+    alphabet = list(string.ascii_lowercase)
+
+    # Mezclar aleatoriamente las letras de la lista
+    random.shuffle(alphabet)
+
+    # Convertir la lista mezclada en una cadena de caracteres y devolverla
+    return ''.join(alphabet)
+
+def monoalphabetic_encrypt(input_file, output_file):
+    # Obtener clave para la encriptación
+    key = random_alphabet()
+
+    # Añadir clave al principio del fichero de salida
+    with open(output_file, 'w') as f:
+        f.write(key + '\n')
+
+    # Abrir ficheros de entrada y salida
+    with open(input_file, 'r') as fin, open(output_file, 'a') as fout:
+        # Recorrer el fichero de entrada línea a línea
+        for line in fin:
+            # Aplicar encriptación mono-alfabética
+            encrypted_line = ''
+            for c in line:
+                if c in string.ascii_lowercase:
+                    index = string.ascii_lowercase.index(c)
+                    encrypted_line += key[index]
+                elif c in string.ascii_uppercase:
+                    index = string.ascii_uppercase.index(c)
+                    encrypted_line += key[index].upper()
+                else:
+                    encrypted_line += c
+
+            # Escribir línea encriptada en el fichero de salida
+            fout.write(encrypted_line)
+
+# Verificar que se han proporcionado los argumentos necesarios
+if len(sys.argv) != 4:
+    print('Uso: monoenc entrada.txt -o salida.enc')
+    sys.exit(1)
+
+# Obtener nombres de archivos de entrada y salida
+input_file = sys.argv[1]
+output_file = sys.argv[3]
+
+# Ejecutar la función de cifrado de Caesar
+monoalphabetic_encrypt(input_file, output_file)
