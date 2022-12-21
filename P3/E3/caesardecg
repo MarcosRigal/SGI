@@ -1,40 +1,39 @@
 import sys
 import string
 
-
-def caesarenc(input_file, output_file):
+def caesardec(k, input_file, output_file):
     # Abrir archivo de entrada en modo lectura
     with open(input_file, 'r') as f:
         # Leer contenido del archivo
         content = f.read()
 
-    # Inicializar variable para almacenar el resultado del cifrado
+    # Inicializar variable para almacenar el resultado del descifrado
     result = ''
 
     # Recorrer cada carácter del contenido del archivo
     for c in content:
-        # Aplicar el desplazamiento de 3
+        # Aplicar el desplazamiento de -k
         if c in string.ascii_lowercase:
-            result += chr((ord(c) - ord('a') + 3) % 26 + ord('a'))
+            result += chr((ord(c) - ord('a') - k) % 26 + ord('a'))
         elif c in string.ascii_uppercase:
-            result += chr((ord(c) - ord('A') + 3) % 26 + ord('A'))
+            result += chr((ord(c) - ord('A') - k) % 26 + ord('A'))
         else:
             result += c
-
     # Abrir archivo de salida en modo escritura
     with open(output_file, 'w') as f:
-        # Escribir el resultado del cifrado en el archivo
+        # Escribir el resultado del descifrado en el archivo
         f.write(result)
 
 
 # Verificar que se han proporcionado los argumentos necesarios
-if len(sys.argv) != 4:
-    print('Uso: caesarenc entrada.txt -o salida.enc')
+if len(sys.argv) != 5:
+    print('Uso: caesardecg k entrada.enc -o salida.txt')
     sys.exit(1)
 
 # Obtener nombres de archivos de entrada y salida
-input_file = sys.argv[1]
-output_file = sys.argv[3]
+k = int(sys.argv[1])
+input_file = sys.argv[2]
+output_file = sys.argv[4]
 
-# Ejecutar la función de cifrado de Caesar
-caesarenc(input_file, output_file)
+# Ejecutar la función de descifrado de Caesar
+caesardec(k,input_file, output_file)
