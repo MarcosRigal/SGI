@@ -1,0 +1,31 @@
+import collections
+
+def descifrar_monoalfabetico(texto_cifrado):
+  # Crea un diccionario vacío para almacenar las frecuencias de cada letra
+  frecuencias = {}
+
+  # Recorre cada carácter del texto cifrado y aumenta en 1 la frecuencia del carácter en el diccionario
+  for c in texto_cifrado:
+    if c in frecuencias:
+      frecuencias[c] += 1
+    else:
+      frecuencias[c] = 1
+
+  # Ordena el diccionario de acuerdo a las frecuencias de cada carácter
+  frecuencias_ordenadas = collections.OrderedDict(sorted(frecuencias.items(), key=lambda t: t[1], reverse=True))
+
+  # Aquí puedes comparar las frecuencias de las letras en el texto cifrado con las frecuencias es
+
+  # Utiliza la información obtenida para construir una tabla de sustitución de letras
+  tabla_sustitucion = {}
+  for cifrado, original in zip(frecuencias_ordenadas.keys(), "etaoinshrdlcumwfgypbvkjxqz"):
+    tabla_sustitucion[cifrado] = original
+
+  # Aplica la tabla de sustitución al texto cifrado para obtener el texto original descifrado
+  texto_descifrado = ""
+  for c in texto_cifrado:
+    texto_descifrado += tabla_sustitucion[c]
+
+  return texto_descifrado
+
+print(descifrar_monoalfabetico("Sxvtknuvpphtydxvsdkcfsyhddhglxcyqkyzdxcyqkssxvtvydkypsncphgddxvtcypht"))
