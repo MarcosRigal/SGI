@@ -1,5 +1,17 @@
 import sys
 import string
+import operator
+import spellchecker
+
+def count_existing_words(decrypted):
+    
+    #Dividir el input
+    words = decrypted.split()
+
+    # Crear objeto SpellChecker
+    spell_checker = spellchecker.SpellChecker()
+    
+    return len(spell_checker.known(words))
 
 def caesardec(k, content):
     
@@ -17,19 +29,24 @@ def caesardec(k, content):
             result += c
     return result
 
-def fuerzabrutacaesar(input_file):
+def fuerzabrutacaesarautomatico(input_file):
     # Abrir archivo de entrada en modo lectura
     with open(input_file, 'r') as f:
         # Leer contenido del archivo
         content = f.read()
 
+    combinationsDict = {}
+
     # Recorrer todos los valores posibles de k
     for k in range(26):
         # Aplicar descifrado de Caesar al contenido del archivo
         decrypted = caesardec(k, content)
+        correct_words = count_existing_words(decrypted)
+        combinationsDict[k]=correct_words
 
-        # Mostrar resultado del descifrado en pantalla
-        print(f'k = {k}: {decrypted}')
+    return list(dict(sorted(combinationsDict.items(), key=operator.itemgetter(1),reverse=True)).keys())[0]
+
+        
 
 # Verificar que se ha proporcionado el argumento necesario
 if len(sys.argv) != 2:
@@ -40,4 +57,13 @@ if len(sys.argv) != 2:
 input_file = sys.argv[1]
 
 # Ejecutar la función de ataque de fuerza bruta al cifrado de Caesar
-fuerzabrutacaesar(input_file)
+k = fuerzabrutacaesarautomatico(input_file)
+
+with open(input_file, 'r') as f:
+    # Leer contenido del archivo
+    content = f.read()
+
+decrypted = caesardec(k, content)
+
+# Mostrar resultado del descifrado en pantalla
+print(f'k = {k}: {decrypted}')
