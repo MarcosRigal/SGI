@@ -1,72 +1,51 @@
-import os
-import argparse
-from zipfile import ZipFile
+import sys
+import zlib
+import string
 
-def checkCommandLineArguments():
-    parser = argparse.ArgumentParser(description='Encripts with caesar algorithm a given file')
+def caesardec(k, content):
     
-    parser.add_argument("input", type=str, metavar='INFILE', help="The file to cypher",)
-    parser.add_argument('-o', dest = "output", type=str, metavar='OUTFILE',help='Specify output file')
-    args = parser.parse_args()
-    
-    if len(vars(args)) < 2:
-        print("Error, missing arguments.")
-        print("Call the program by this way: python3 caesarenc fichentrada -o fichsalida")
-        exit()
-    if (args.input == None) or (args.output == None):
-        print("Error, bad arguments.")
-        print("Call the program by this way: python3 caesarenc fichentrada -o fichsalida")
-        exit()
-    return args.input, args.output
+    # Inicializar variable para almacenar el resultado del descifrado
+    result = ''
 
-def openFile(path):
-    try:
-        with ZipFile(path, 'r') as zip:
-            zip.extractall()
-        f = open("output.enc", "r")
-        return f
-            
-    except:
-        print('Error, file could not be opened check if file exists.')
-
-def readFile(file):
-    try:
-        text = file.read() 
-        return text
-            
-    except:
-        print('Error, file could not be readed check if file exists.')
-
-def decipherText(text, k):
-
-    cipheredText = ""
-    text = text.upper()
-
-    for i in range(len(text)):
-
-        char = text[i]
-
-        if not char.isspace():
-            cipheredText += chr((ord(char) - k-65) % 26 + 65)
+    # Recorrer cada carácter del contenido del archivo
+    for c in content:
+        # Aplicar el desplazamiento de -k
+        if c in string.ascii_lowercase:
+            result += chr((ord(c) - ord('a') - k) % 26 + ord('a'))
+        elif c in string.ascii_uppercase:
+            result += chr((ord(c) - ord('A') - k) % 26 + ord('A'))
         else:
-            cipheredText += " "
+            result += c
+    return result
 
-    return cipheredText
+def combinadec(input_file, output_file):
+    # Abrir archivo de entrada en modo lectura
+    with open(input_file, 'rb') as f:
+        # Leer contenido del archivo
+        content = f.read()
 
-def saveText(cipheredText, path):
-    try:
-        f = open(path, "w")
-        f.write(cipheredText)
-    except:
-        print('Error, file could not be saved check path.')
+    # Descomprimir el contenido del archivo
+    decompressedBytes = zlib.decompress(content)
 
-if __name__ == "__main__":
-    
-    input, output = checkCommandLineArguments()
-    
-    file = openFile(input)
-    cipheredText = readFile(file)
+    decompressed = decompressedBytes.decode('utf-8')
 
-    decipheredText = decipherText(cipheredText, 3)
-    
-    saveText(decipheredText, output)
+    # Aplicar descifrado de Caesar al contenido descomprimido
+    decrypted = caesardec(3, decompressed)
+
+    # Abrir archivo de salida en modo escritura
+    with open(output_file, 'w') as f:
+        # Escribir el resultado del descifrado en el archivo
+        f.write(decrypted)
+
+
+# Verificar que se han proporcionado los argumentos necesarios
+if len(sys.argv) != 4:
+    print('Uso: combinadec fichentrada -o fichsalida')
+    sys.exit(1)
+
+# Obtener nombres de archivos de entrada y salida
+input_file = sys.argv[1]
+output_file = sys.argv[3]
+
+# Ejecutar la función de combinación de descifrado de Caesar y descompresión
+combinadec(input_file, output_file)
