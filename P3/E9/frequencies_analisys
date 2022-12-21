@@ -1,0 +1,25 @@
+import string
+
+def analyze_frequencies(input_file):
+    # Abrir fichero de entrada en modo lectura
+    with open(input_file, 'r') as fin:
+        # Crear diccionario vacío para almacenar las frecuencias de cada letra
+        frequencies = {}
+
+        # Recorrer el fichero de entrada línea a línea
+        for line in fin:
+            # Recorrer cada carácter de la línea
+            for c in line:
+                # Si el carácter es una letra, aumentar su frecuencia en el diccionario
+                if c in string.ascii_lowercase:
+                    if c in frequencies:
+                        frequencies[c] += 1
+                    else:
+                        frequencies[c] = 1
+
+        # Imprimir frecuencias de cada letra en orden alfabético
+        for letter in string.ascii_lowercase:
+            print(f'{letter}: {frequencies.get(letter, 0)}')
+
+# Probar la función con un fichero de texto grande
+analyze_frequencies('./quijote.txt')
