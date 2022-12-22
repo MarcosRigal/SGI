@@ -1,31 +1,55 @@
-import collections
+import string
 
-def descifrar_monoalfabetico(texto_cifrado):
-  # Crea un diccionario vacío para almacenar las frecuencias de cada letra
-  frecuencias = {}
+def merge_and_sort_dictionaries(dict1, dict2):
+  # Ordena ambos diccionarios por sus valores en orden descendente
+  sorted_dict1 = sorted(dict1.items(), key=lambda item: item[1], reverse=True)
+  sorted_dict2 = sorted(dict2.items(), key=lambda item: item[1], reverse=True)
 
-  # Recorre cada carácter del texto cifrado y aumenta en 1 la frecuencia del carácter en el diccionario
-  for c in texto_cifrado:
-    if c in frecuencias:
-      frecuencias[c] += 1
-    else:
-      frecuencias[c] = 1
+  # Crea un diccionario resultante
+  result = {}
 
-  # Ordena el diccionario de acuerdo a las frecuencias de cada carácter
-  frecuencias_ordenadas = collections.OrderedDict(sorted(frecuencias.items(), key=lambda t: t[1], reverse=True))
+  # Itera sobre los elementos ordenados de ambos diccionarios
+  for (key1, value1), (key2, value2) in zip(sorted_dict1, sorted_dict2):
+    # Crea una nueva entrada en el diccionario resultante con la clave del primer diccionario y el valor del segundo diccionario
+    result[key1] = key2
 
-  # Aquí puedes comparar las frecuencias de las letras en el texto cifrado con las frecuencias es
+  # Devuelve el diccionario
+  return result
 
-  # Utiliza la información obtenida para construir una tabla de sustitución de letras
-  tabla_sustitucion = {}
-  for cifrado, original in zip(frecuencias_ordenadas.keys(), "etaoinshrdlcumwfgypbvkjxqz"):
-    tabla_sustitucion[cifrado] = original
+def break_monoalphabetic(input_file, language='english'):
+  # Abre el archivo de entrada y lo lee como una cadena de caracteres
+  with open(input_file, 'r') as f:
+    text = f.read()
 
-  # Aplica la tabla de sustitución al texto cifrado para obtener el texto original descifrado
-  texto_descifrado = ""
-  for c in texto_cifrado:
-    texto_descifrado += tabla_sustitucion[c]
+  # Realiza un análisis de frecuencias del texto cifrado
+  frequencies = {letter: 0 for letter in string.ascii_lowercase}
+  charSum = 0
+  for c in text:
+    charSum += 1
+    if c in string.ascii_lowercase:
+      frequencies[c] += 1
+  for letter in frequencies:
+    frequencies[letter] = frequencies[letter] / charSum * 100
+  # Obtiene las frecuencias esperadas de cada letra en el idioma especificado
+  expected_frequencies = get_expected_frequencies(language)
 
-  return texto_descifrado
 
-print(descifrar_monoalfabetico("Sxvtknuvpphtydxvsdkcfsyhddhglxcyqkyzdxcyqkssxvtvydkypsncphgddxvtcypht"))
+  key = merge_and_sort_dictionaries(frequencies,expected_frequencies)
+
+  # Desencripta el texto cifrado utilizando la clave de sustitución deducida
+  decrypted_text = ''.join(key[c] if c in string.ascii_lowercase else c for c in text)
+
+  # Imprime el texto desencriptado y la clave de sustitución deducida
+  print(f'Texto desencriptado: {decrypted_text}')
+  print(f'Clave de sustitución deducida: {key}')
+
+def get_expected_frequencies(language):
+  # Esta función devuelve las frecuencias esperadas de cada letra en el idioma especificado.
+  # En este ejemplo, sólo se incluye el idioma inglés.
+  if language == 'english':
+    return {'a': 8.167, 'b': 1.492, 'c': 2.782, 'd': 4.253, 'e': 12.702, 'f': 2.228, 'g': 2.015, 'h': 6.094, 'i': 6.966, 'j': 0.153, 'k': 0.772, 'l': 4.025, 'm': 2.406, 'n': 6.749, 'o': 7.507, 'p': 1.929, 'q': 0.095, 'r': 5.987, 's': 6.327, 't': 9.056, 'u': 2.758, 'v': 0.978, 'w': 2.360, 'x': 0.150, 'y': 1.974, 'z': 0.074}
+  else:
+    raise ValueError(f'Idioma "{language}" no soportado.')
+
+# Prueba la función
+break_monoalphabetic('salida.enc', 'english')
