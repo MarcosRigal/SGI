@@ -3,10 +3,13 @@ from Crypto.Hash import MD5
 
 # Obtiene la opción y el nombre del fichero de la línea de comandos
 option = sys.argv[1]
-file_name = sys.argv[2]
 
 if option == "-c":
+    if len(sys.argv) != 4:
+        print('Uso: comparefilehash.py -c entrada.txt entrada.txt')
+        sys.exit(1)
     # Obtiene el nombre del segundo fichero de la línea de comandos
+    file_name = sys.argv[2]
     file_name_2 = sys.argv[3]
 
     # Abre los ficheros en modo de lectura de bytes
@@ -31,6 +34,7 @@ if option == "-c":
                 print("Los ficheros tienen distinto hash MD5")
 else:
     # Abre el fichero en modo de lectura de bytes
+    file_name = sys.argv[1]
     with open(file_name, "rb") as f:
         # Crea una instancia del algoritmo MD5
         md5 = MD5.new()
